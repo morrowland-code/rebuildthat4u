@@ -1,16 +1,14 @@
-// server.js require("dotenv").config(); const express = require("express"); const fs = require("fs"); const path = require("path"); const app = express(); const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY); const bcrypt = require("bcrypt"); const bodyParser = require("body-parser"); const cookieParser = require("cookie-parser");
-let users = require("./users.json");
-app.use(bodyParser.json()); app.use(cookieParser()); app.use(express.static("public"));
-let cart = [];
-app.post("/save-cart", (req, res) => { cart = req.body; res.sendStatus(200); });
-app.post("/create-checkout-session", async (req, res) => { const { email, name, address } = req.body; const line_items = cart.map(product => ({ price_data: { currency: "usd", product_data: { name: product.name }, unit_amount: Math.round(product.price * 100), }, quantity: 1, }));
-const session = await stripe.checkout.sessions.create({ payment_method_types: ["card"], line_items, mode: "payment", success_url: ${req.protocol}://${req.get("host")}/success.html, cancel_url: ${req.protocol}://${req.get("host")}/cancel.html, customer_email: email, metadata: { name, address }, });
-res.json({ id: session.id }); });
-app.get("/get-orders", (req, res) => { // In a real app this would be from a database const orders = []; for (const u of users) { if (u.orders) { for (const o of u.orders) { orders.push({ name: u.username, email: ${u.username}@site.com, address: "123 Main St, USA", amount: o.amount }); } } } res.json(orders); });
-app.get("/get-products", (req, res) => { const productsPath = path.join(__dirname, "products.json"); const products = fs.existsSync(productsPath) ? JSON.parse(fs.readFileSync(productsPath)) : []; res.json(products); });
-app.post("/add-product", (req, res) => { const productsPath = path.join(__dirname, "products.json"); const newProduct = req.body; let products = []; if (fs.existsSync(productsPath)) { products = JSON.parse(fs.readFileSync(productsPath)); } products.push(newProduct); fs.writeFileSync(productsPath, JSON.stringify(products, null, 2)); res.sendStatus(200); });
-app.post("/login", async (req, res) => { const { username, password } = req.body; const user = users.find(u => u.username === username); if (user && await bcrypt.compare(password, user.password)) { res.cookie("session", username, { httpOnly: true }); res.sendStatus(200); } else { res.sendStatus(401); } });
-app.get("/session", (req, res) => { const username = req.cookies.session; const user = users.find(u => u.username === username); if (!user) return res.json({}); res.json(user); });
-app.post("/logout", (req, res) => { res.clearCookie("session"); res.sendStatus(200); });
-app.post("/add-order", (req, res) => { const username = req.cookies.session; const user = users.find(u => u.username === username); if (!user) return res.sendStatus(403); const newOrder = { id: Math.floor(Math.random() * 10000), amount: 99.99 }; user.orders = user.orders || []; user.orders.push(newOrder); fs.writeFileSync("users.json", JSON.stringify(users, null, 2)); res.sendStatus(200); });
-const PORT = process.env.PORT || 3000; app.listen(PORT, () => console.log(Server running on http://localhost:${PORT}));
+{
+  "name": "rebuildthat4u",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "bcrypt": "^5.1.1",
+    "dotenv": "^16.5.0",
+    "stripe": "^12.6.0"
+  }
+}
