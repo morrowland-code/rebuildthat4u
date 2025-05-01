@@ -51,19 +51,17 @@
       const username = document.getElementById('username').value.trim();
       const password = document.getElementById('password').value.trim();
 
-      if (!username || !password) {
-        document.getElementById('message').innerText = 'Please enter both fields.';
-        return;
-      }
-
       const res = await fetch('/login', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({ username, password })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
       });
 
-      if (res.redirected) {
-        window.location.href = res.url;
+      const data = await res.json();
+      if (data.success && username === "rebuildkey4u") {
+        window.location.href = 'admin.html';
+      } else if (data.success) {
+        window.location.href = 'checkout.html';
       } else {
         document.getElementById('message').innerText = 'Login failed.';
       }
@@ -73,19 +71,15 @@
       const username = document.getElementById('username').value.trim();
       const password = document.getElementById('password').value.trim();
 
-      if (!username || !password) {
-        document.getElementById('message').innerText = 'Please enter both fields.';
-        return;
-      }
-
       const res = await fetch('/register', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({ username, password })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
       });
 
-      if (res.redirected) {
-        window.location.href = res.url;
+      const data = await res.json();
+      if (data.success) {
+        window.location.href = 'checkout.html';
       } else {
         document.getElementById('message').innerText = 'Username may already exist.';
       }

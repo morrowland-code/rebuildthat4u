@@ -10,6 +10,8 @@ const MongoStore = require('connect-mongo');
 require('dotenv').config();
 
 const app = express();
+
+// Middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -19,7 +21,6 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.error('Mongo error:', err));
 
-// Mongo-backed sessions
 app.use(session({
   secret: 'keyboard cat',
   resave: false,
@@ -27,39 +28,37 @@ app.use(session({
   store: MongoStore.create({ mongoUrl: process.env.MONGO_URI })
 }));
 
-// JSON data helpers
+// Helpers
 const usersFile = 'users.json';
 const productsFile = 'products.json';
 const loadJSON = file => JSON.parse(fs.existsSync(file) ? fs.readFileSync(file) : '[]');
 const saveJSON = (file, data) => fs.writeFileSync(file, JSON.stringify(data, null, 2));
 
-// LOGIN
+// LOGIN - accepts JSON from frontend
 app.post('/login', (req, res) => {
   const { username, password } = req.body;
   const users = loadJSON(usersFile);
   const user = users.find(u => u.username === username);
   if (user && bcrypt.compareSync(password, user.password)) {
     req.session.user = user.username;
-    res.redirect(user.username === process.env.ADMIN_KEY ? '/admin.html' : '/checkout.html');
+    res.json({ success: true, redirect: user.username === process.env.ADMIN_KEY ? '/admin.html' : '/checkout.html' });
   } else {
-    res.redirect('/login.html?error=1');
+    res.json({ success: false });
   }
 });
 
-// REGISTER
+// REGISTER - accepts JSON from frontend
 app.post('/register', async (req, res) => {
   const { username, password } = req.body;
   const users = loadJSON(usersFile);
-
   if (!username || !password || users.some(u => u.username === username)) {
-    return res.redirect('/login.html?exists=1');
+    return res.json({ success: false });
   }
-
   const hashed = await bcrypt.hash(password, 10);
   users.push({ username, password: hashed, balance: 0, revenue: 0, payoutPending: 0, orders: [] });
   saveJSON(usersFile, users);
   req.session.user = username;
-  res.redirect('/checkout.html');
+  res.json({ success: true, redirect: '/checkout.html' });
 });
 
 // SESSION INFO
@@ -72,12 +71,11 @@ app.post('/logout', (req, res) => {
   req.session.destroy(() => res.redirect('/'));
 });
 
-// PRODUCT ROUTES
+// PRODUCTS
 app.get('/get-products', (req, res) => {
   const products = loadJSON(productsFile);
   res.json(products);
 });
-
 app.post('/add-product', (req, res) => {
   const { name, price, image } = req.body;
   const products = loadJSON(productsFile);
@@ -85,7 +83,6 @@ app.post('/add-product', (req, res) => {
   saveJSON(productsFile, products);
   res.json({ success: true });
 });
-
 app.post('/delete-product', (req, res) => {
   const { name } = req.body;
   let products = loadJSON(productsFile);
@@ -116,11 +113,11 @@ app.post('/create-checkout-session', async (req, res) => {
   res.json({ id: session.id });
 });
 
-// FALLBACK TO INDEX
+// FALLBACK
 app.use((req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// START SERVER
+// START
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Live at http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`>>> SERVER DEPLOYED ON PORT ${PORT}`));
