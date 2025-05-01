@@ -10,17 +10,16 @@ const MongoStore = require('connect-mongo');
 require('dotenv').config();
 
 const app = express();
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Connect MongoDB
+// MongoDB connection
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.error('Mongo error:', err));
 
-// Sessions stored in MongoDB
+// Mongo-backed sessions
 app.use(session({
   secret: 'keyboard cat',
   resave: false,
@@ -28,13 +27,13 @@ app.use(session({
   store: MongoStore.create({ mongoUrl: process.env.MONGO_URI })
 }));
 
-// Load & Save JSON helpers
+// JSON data helpers
 const usersFile = 'users.json';
 const productsFile = 'products.json';
 const loadJSON = file => JSON.parse(fs.existsSync(file) ? fs.readFileSync(file) : '[]');
 const saveJSON = (file, data) => fs.writeFileSync(file, JSON.stringify(data, null, 2));
 
-// AUTH
+// LOGIN
 app.post('/login', (req, res) => {
   const { username, password } = req.body;
   const users = loadJSON(usersFile);
@@ -47,28 +46,33 @@ app.post('/login', (req, res) => {
   }
 });
 
+// REGISTER
 app.post('/register', async (req, res) => {
   const { username, password } = req.body;
   const users = loadJSON(usersFile);
-  if (users.some(u => u.username === username)) {
+
+  if (!username || !password || users.some(u => u.username === username)) {
     return res.redirect('/login.html?exists=1');
   }
+
   const hashed = await bcrypt.hash(password, 10);
-  users.push({ username, password: hashed, orders: [] });
+  users.push({ username, password: hashed, balance: 0, revenue: 0, payoutPending: 0, orders: [] });
   saveJSON(usersFile, users);
   req.session.user = username;
   res.redirect('/checkout.html');
 });
 
+// SESSION INFO
 app.get('/session', (req, res) => {
   res.json({ user: req.session.user || null });
 });
 
+// LOGOUT
 app.post('/logout', (req, res) => {
   req.session.destroy(() => res.redirect('/'));
 });
 
-// PRODUCTS
+// PRODUCT ROUTES
 app.get('/get-products', (req, res) => {
   const products = loadJSON(productsFile);
   res.json(products);
@@ -90,7 +94,7 @@ app.post('/delete-product', (req, res) => {
   res.json({ success: true });
 });
 
-// STRIPE
+// STRIPE CHECKOUT
 app.post('/create-checkout-session', async (req, res) => {
   if (!req.session.user) return res.redirect('/login.html');
   const cart = req.body.cart || [];
@@ -107,15 +111,16 @@ app.post('/create-checkout-session', async (req, res) => {
     line_items,
     mode: 'payment',
     success_url: `${process.env.DOMAIN}/success.html`,
-    cancel_url: `${process.env.DOMAIN}/cart.html`,
+    cancel_url: `${process.env.DOMAIN}/cart.html`
   });
   res.json({ id: session.id });
 });
 
-// Catch-all fallback
+// FALLBACK TO INDEX
 app.use((req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+// START SERVER
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Live at http://localhost:${PORT}`));

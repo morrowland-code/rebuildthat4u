@@ -1,7 +1,7 @@
 [
   {
-    "username": "admin",
-    "password": "$2b$12$/4YRtv9PhjE6rr/2CmWAJeNmfRV./Oddnmd/WveN3FkzejbPrVeFK",
+    "username": "rebuildkey4u",
+    "password": "$2b$12$9Ne2dzqDJIgDK8bGg5ta3.M1ZnVtwgc/tfzV56kY8E3iyEO8XYyvO",
     "balance": 10000,
     "revenue": 10000,
     "payoutPending": 0,
@@ -27,14 +27,6 @@
   {
     "username": "jesssica",
     "password": "$2b$10$0LYfXdNDTpgieynK6VsmfOGMurnz8C6r4xDEIWxrbIRTv66FBR1ly",
-    "balance": 0,
-    "revenue": 0,
-    "payoutPending": 0,
-    "orders": []
-  },
-  {
-    "username": "",
-    "password": "$2b$10$4r1hekXLu5BnkasfEwe6CexfW5p6QEq.Yfz5tFjhUAPMLxSdyW5pO",
     "balance": 0,
     "revenue": 0,
     "payoutPending": 0,
