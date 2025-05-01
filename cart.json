@@ -1,13 +1,18 @@
 [
   {
-    "name": "Safety Helmet",
-    "price": 39.5,
-    "image": "https://i.ibb.co/Sr6zMdR/helmet.jpg"
+    "name": "Rebuild Worker Boots",
+    "price": 79.99,
+    "image": "https://i.ibb.co/zPbZgRK/workerboots.jpg"
   },
   {
     "name": "Heavy Duty Gloves",
     "price": 12.95,
     "image": "https://i.ibb.co/yfLJMK9/gloves.jpg"
+  },
+  {
+    "name": "apple",
+    "price": 1,
+    "image": "https://i.ibb.co/PGN5gPG4/Screenshot-2025-04-29-152554.png"
   },
   {
     "name": "apple",

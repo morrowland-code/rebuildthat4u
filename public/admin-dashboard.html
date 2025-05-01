@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard - RebuildThat4U</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0fff0;
+      padding: 30px;
+      text-align: center;
+    }
+    h1 {
+      color: #2e7d32;
+    }
+    .box {
+      border: 2px solid #2e7d32;
+      padding: 20px;
+      margin: 20px auto;
+      width: 90%;
+      max-width: 600px;
+      background: #ffffff;
+      border-radius: 10px;
+    }
+    .order {
+      border-bottom: 1px dashed #ccc;
+      margin-bottom: 10px;
+      padding-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Admin Dashboard</h1>
+  <div class="box" id="revenueBox">
+    <h2>Total Revenue</h2>
+    <p id="totalRevenue">$0.00</p>
+  </div>
+
+  <div class="box" id="ordersBox">
+    <h2>All Orders</h2>
+    <div id="orderList">Loading orders...</div>
+  </div>
+
+  <script>
+    fetch('/admin-data')
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('totalRevenue').innerText = `$${(data.revenue || 0).toFixed(2)}`;
+        const orderList = document.getElementById('orderList');
+        orderList.innerHTML = '';
+        data.orders.forEach(order => {
+          const div = document.createElement('div');
+          div.className = 'order';
+          div.innerText = `Order #${order.id} - $${order.amount.toFixed(2)}`;
+          orderList.appendChild(div);
+        });
+      });
+  </script>
+</body>
+</html>

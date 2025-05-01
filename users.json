@@ -1,41 +1,40 @@
 [
   {
     "username": "admin",
-    "password": "$2b$10$kARZga4OwraggaOtqIIXJurB1tjcuu.vnLSI9JDQZeHLPZzE/knGC",
-    "balance": 2345,
+    "password": "$2b$12$/4YRtv9PhjE6rr/2CmWAJeNmfRV./Oddnmd/WveN3FkzejbPrVeFK",
+    "balance": 10000,
+    "revenue": 10000,
+    "payoutPending": 0,
     "orders": [
       {
-        "id": 1024,
-        "amount": 120
+        "id": 2001,
+        "amount": 250
       },
       {
-        "id": 1023,
-        "amount": 64.5
-      },
-      {
-        "id": 1022,
-        "amount": 88
+        "id": 2002,
+        "amount": 150
       }
     ]
   },
   {
-    "username": "jessica",
-    "password": "$2b$10$c2Sd45lqHyyP7dszTRDlZOU0.XXkSwG2ycGPyig5D7.gVSKRxh.xu",
-    "balance": 5200,
-    "orders": [
-      {
-        "id": 1030,
-        "amount": 300
-      },
-      {
-        "id": 1029,
-        "amount": 200.5
-      }
-    ]
+    "username": "customer",
+    "password": "$2b$12$sA4F.AOFj66WsGO0vlSK8uNZWWysSV9j7D8kFSzBBm/wGv.1uKoui",
+    "balance": 0,
+    "revenue": 0,
+    "payoutPending": 0,
+    "orders": []
   },
   {
-    "username": "schrodinger",
-    "password": "$2b$10$ykP50XIm2UxG8v.46zfF5uPMRYTfrDaURJDh3uiVPLFE38edmRCoC",
+    "username": "jesssica",
+    "password": "$2b$10$0LYfXdNDTpgieynK6VsmfOGMurnz8C6r4xDEIWxrbIRTv66FBR1ly",
+    "balance": 0,
+    "revenue": 0,
+    "payoutPending": 0,
+    "orders": []
+  },
+  {
+    "username": "",
+    "password": "$2b$10$4r1hekXLu5BnkasfEwe6CexfW5p6QEq.Yfz5tFjhUAPMLxSdyW5pO",
     "balance": 0,
     "revenue": 0,
     "payoutPending": 0,

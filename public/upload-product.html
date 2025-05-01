@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Product Panel</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      background: #fff3e0;
+      font-family: Arial, sans-serif;
+      padding: 40px;
+      text-align: center;
+    }
+
+    h1 {
+      color: #e65100;
+    }
+
+    input, button {
+      padding: 10px;
+      margin: 10px;
+      font-size: 16px;
+      width: 80%;
+      max-width: 400px;
+    }
+
+    button {
+      background: #ff9800;
+      border: none;
+      color: white;
+      cursor: pointer;
+      border-radius: 8px;
+    }
+
+    button:hover {
+      background: #e65100;
+    }
+
+    .product-item {
+      background: #ffe0b2;
+      border: 2px dashed #ffb74d;
+      border-radius: 12px;
+      margin: 10px auto;
+      padding: 15px;
+      width: 300px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Admin Product Panel</h1>
+
+  <div id="admin-form" style="display:none;">
+    <input type="text" id="name" placeholder="Product Name" required><br>
+    <input type="number" id="price" placeholder="Price ($)" required><br>
+    <input type="file" id="imageFile" accept="image/*" required><br>
+    <button onclick="addProduct()">Add Product</button>
+
+    <div id="message"></div>
+
+    <h2>Delete Existing Products</h2>
+    <div id="productList"></div>
+  </div>
+
+  <script>
+    const imgbbKey = "d9262e53baa544c4cf97b6b34bdd98c1";
+
+    async function checkAdmin() {
+      const res = await fetch('/session');
+      const user = await res.json();
+      if (user.username === 'admin') {
+        document.getElementById('admin-form').style.display = 'block';
+        loadProducts();
+      } else {
+        alert('Access denied. Admins only.');
+        window.location.href = 'index.html';
+      }
+    }
+
+    async function addProduct() {
+      const name = document.getElementById('name').value;
+      const price = document.getElementById('price').value;
+      const imageFile = document.getElementById('imageFile').files[0];
+
+      if (!imageFile) return alert("Please select an image.");
+
+      const formData = new FormData();
+      formData.append('image', imageFile);
+
+      const uploadRes = await fetch(`https://api.imgbb.com/1/upload?key=${imgbbKey}`, {
+        method: 'POST',
+        body: formData
+      });
+
+      const uploadData = await uploadRes.json();
+      if (!uploadData.success) return alert("Image upload failed.");
+
+      const image = uploadData.data.url;
+      const productRes = await fetch('/add-product', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, price, image })
+      });
+
+      const result = await productRes.json();
+      document.getElementById('message').innerText = result.success
+        ? "Product added!"
+        : "Failed to add product.";
+
+      loadProducts();
+    }
+
+    async function loadProducts() {
+      const res = await fetch('/get-products');
+      const products = await res.json();
+      const list = document.getElementById('productList');
+      list.innerHTML = '';
+
+      products.forEach((product) => {
+        const div = document.createElement('div');
+        div.className = 'product-item';
+        div.innerHTML = `
+          <strong>${product.name}</strong><br>
+          $${product.price.toFixed(2)}<br>
+          <img src="${product.image}" width="100"><br>
+          <button onclick="deleteProduct('${product.name}')">Delete</button>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    async function deleteProduct(name) {
+      const res = await fetch('/delete-product', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name })
+      });
+
+      const result = await res.json();
+      alert(result.success ? "Deleted!" : "Delete failed.");
+      loadProducts();
+    }
+
+    checkAdmin();
+  </script>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dashboard - RebuildThat4U</title>
+  <style>
+    body {
+      background-color: #fbe9e7;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 40px;
+    }
+    h1 {
+      color: #d84315;
+    }
+    .info {
+      font-size: 18px;
+      margin-top: 20px;
+    }
+    .order {
+      background: #ffccbc;
+      margin: 10px auto;
+      padding: 10px;
+      width: 300px;
+      border-radius: 8px;
+      border: 1px solid #ff7043;
+    }
+    button {
+      background: #e64a19;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      margin-top: 20px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #bf360c;
+    }
+  </style>
+</head>
+<body>
+  <h1>Your Dashboard</h1>
+  <div class="info" id="userInfo"></div>
+  <div id="orders"></div>
+  <button onclick="logout()">Logout</button>
+
+  <script>
+    async function fetchUser() {
+      const res = await fetch('/session');
+      const user = await res.json();
+
+      if (!user.username) {
+        location.href = "index.html";
+        return;
+      }
+
+      const info = document.getElementById('userInfo');
+      info.innerHTML = `
+        <p><strong>Username:</strong> ${user.username}</p>
+        <p><strong>Balance:</strong> $${(user.balance || 0).toFixed(2)}</p>
+        <p><strong>Revenue:</strong> $${(user.revenue || 0).toFixed(2)}</p>
+        <p><strong>Payout Pending:</strong> $${(user.payoutPending || 0).toFixed(2)}</p>
+        <h2>Orders:</h2>
+      `;
+
+      const orderDiv = document.getElementById('orders');
+      user.orders.forEach(o => {
+        const el = document.createElement('div');
+        el.className = 'order';
+        el.innerHTML = `Order ID: ${o.id}<br>Amount: $${o.amount.toFixed(2)}`;
+        orderDiv.appendChild(el);
+      });
+    }
+
+    async function logout() {
+      await fetch('/logout', { method: 'POST' });
+      location.href = "index.html";
+    }
+
+    fetchUser();
+  </script>
+</body>
+</html>

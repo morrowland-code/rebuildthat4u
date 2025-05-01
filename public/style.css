@@ -1,0 +1,119 @@
+/* Base layout */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #FFA500; /* Construction orange */
+    color: #222;
+    text-align: center;
+    padding: 40px;
+    margin: 0;
+  }
+  
+  h1 {
+    color: #fff;
+    font-size: 36px;
+    margin-bottom: 20px;
+    text-shadow: 1px 1px 3px #000;
+  }
+  
+  p {
+    color: #fff;
+    font-size: 18px;
+  }
+  
+  /* Forms */
+  form {
+    background: #fff8e1;
+    border: 4px dashed #000;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 20px auto;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 2px 2px 8px #333;
+  }
+  
+  input, button {
+    padding: 12px;
+    margin: 10px;
+    width: 80%;
+    max-width: 300px;
+    font-size: 16px;
+    border: 2px solid #333;
+    border-radius: 8px;
+  }
+  
+  /* Buttons */
+  button {
+    background-color: #333;
+    color: white;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #555;
+  }
+  
+  a.button-link {
+    display: inline-block;
+    background-color: #222;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    margin: 10px;
+  }
+  
+  a.button-link:hover {
+    background-color: #444;
+  }
+  
+  /* Product cards */
+  .product-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 30px;
+  }
+  
+  .product-card {
+    background: #fff3cd;
+    border: 3px dashed #333;
+    border-radius: 16px;
+    width: 220px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  }
+  
+  .product-card img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+  
+  .product-name {
+    font-weight: bold;
+    margin-top: 10px;
+    color: #b71c1c;
+  }
+  
+  .price {
+    color: #333;
+    margin: 5px 0;
+  }
+  
+  /* Cart / Buy buttons */
+  .buy-btn {
+    background: #ff6600;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-weight: bold;
+  }
+  
+  .buy-btn:hover {
+    background: #e65c00;
+  }

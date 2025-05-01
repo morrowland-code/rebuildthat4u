@@ -1,8 +1,9 @@
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-    
+   
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
+
 
     const response = await fetch('/login', {
         method: 'POST',
@@ -12,7 +13,9 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         body: JSON.stringify({ username, password }),
     });
 
+
     const data = await response.json();
+
 
     if (data.success) {
         // Redirect to dashboard if login is successful
@@ -21,3 +24,4 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         alert('Login failed. Please try again.');
     }
 });
+

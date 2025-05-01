@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Checkout - RebuildThat4U</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #fff8e1;
+      padding: 40px;
+      text-align: center;
+    }
+    input {
+      margin: 10px;
+      padding: 10px;
+      width: 300px;
+    }
+    button {
+      padding: 10px 30px;
+      font-size: 16px;
+      background-color: #ff9800;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    button:hover {
+      background-color: #e68900;
+    }
+    .legal {
+      font-size: 13px;
+      color: #555;
+      margin-top: 30px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>Checkout</h1>
+  <div id="totalDisplay">Loading cart total...</div>
+
+  <input type="text" placeholder="Full Name" required><br>
+  <input type="email" placeholder="Email" required><br>
+  <input type="text" placeholder="Shipping Address" required><br>
+  <input type="text" placeholder="Card Number" required><br>
+  <input type="text" placeholder="Expiration (MM/YY)" required><br>
+  <input type="text" placeholder="CVC" required><br>
+
+  <button onclick="confirmCheckout()">Confirm Order</button>
+
+  <div class="legal">
+    <p>By completing your order, you agree to our <strong>Terms & Conditions</strong>, including a <strong>30-day return policy</strong>. Orders are subject to availability and approval.</p>
+  </div>
+
+  <script>
+    async function confirmCheckout() {
+      const response = await fetch('/create-checkout-session', {
+        method: 'POST'
+      });
+      const data = await response.json();
+      if (data.id) {
+        window.location.href = `https://checkout.stripe.com/pay/${data.id}`;
+      } else {
+        alert("Failed to create checkout session.");
+      }
+    }
+
+    // Load cart total
+    fetch('/get-cart')
+      .then(res => res.json())
+      .then(cart => {
+        const total = cart.reduce((sum, item) => sum + Number(item.price), 0).toFixed(2);
+        document.getElementById('totalDisplay').innerText = `Total: $${total}`;
+      });
+  </script>
+</body>
+</html>
