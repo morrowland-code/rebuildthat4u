@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>RebuildThat4U Login</title>
@@ -39,49 +40,56 @@
 </head>
 <body>
   <h1>Login to RebuildThat4U</h1>
-  <input type="text" id="username" placeholder="Username"><br>
-  <input type="password" id="password" placeholder="Password"><br>
+  <input type="text" id="username" placeholder="Username" /><br>
+  <input type="password" id="password" placeholder="Password" /><br>
   <button onclick="login()">Login</button>
   <button onclick="register()">Register</button>
-  <div id="message"></div>  <script>
+  <div id="message"></div>
+
+  <script>
     async function login() {
-      const username = document.getElementById('username').value;
-      const password = document.getElementById('password').value;
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+
+      if (!username || !password) {
+        document.getElementById('message').innerText = 'Please enter both fields.';
+        return;
+      }
 
       const res = await fetch('/login', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ username, password })
       });
-      const result = await res.json();
 
-      if (result.success) {
-        if (username === 'admin') {
-          window.location.href = 'admin.html';
-        } else {
-          window.location.href = 'checkout.html';
-        }
+      if (res.redirected) {
+        window.location.href = res.url;
       } else {
-        document.getElementById('message').innerText = 'Login failed';
+        document.getElementById('message').innerText = 'Login failed.';
       }
     }
 
     async function register() {
-      const username = document.getElementById('username').value;
-      const password = document.getElementById('password').value;
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+
+      if (!username || !password) {
+        document.getElementById('message').innerText = 'Please enter both fields.';
+        return;
+      }
 
       const res = await fetch('/register', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ username, password })
       });
-      const result = await res.json();
 
-      if (result.success) {
-        document.getElementById('message').innerText = 'Registered successfully, now login.';
+      if (res.redirected) {
+        window.location.href = res.url;
       } else {
-        document.getElementById('message').innerText = 'Username already exists.';
+        document.getElementById('message').innerText = 'Username may already exist.';
       }
     }
-  </script></body>
+  </script>
+</body>
 </html>
